@@ -48,7 +48,7 @@ function SearchPage() {
     const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
     return products
       .map((p) => {
-        const hay = `${p.name} ${p.category} ${p.colour} ${p.gender} ${p.fabric ?? ""} ${(p.tags ?? []).join(" ")} ${p.description ?? ""}`.toLowerCase();
+        const hay = `${p.name} ${p.category} ${p.colour} ${p.gender} ${p.description ?? ""}`.toLowerCase();
         const score = tokens.reduce((acc, t) => acc + (hay.includes(t) ? 1 : 0), 0);
         return { p, score };
       })
@@ -64,7 +64,7 @@ function SearchPage() {
   }
 
   function onTryOn(product: Product) {
-    tryOnStore.setGarment({
+    tryOnStore.beginGenerating({
       productId: product.id,
       name: product.name,
       image: product.images[0]!,
