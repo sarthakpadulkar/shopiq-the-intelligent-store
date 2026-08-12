@@ -89,6 +89,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_demand_intelligence"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_product_performance"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "analytics_events_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
@@ -101,6 +115,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "v_store_analytics"
+            referencedColumns: ["store_id"]
           },
         ]
       }
@@ -139,6 +160,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymous_sessions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "v_store_analytics"
+            referencedColumns: ["store_id"]
           },
         ]
       }
@@ -239,11 +267,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_demand_intelligence"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_product_performance"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "inventory_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "v_store_analytics"
+            referencedColumns: ["store_id"]
           },
         ]
       }
@@ -411,6 +460,13 @@ export type Database = {
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "profiles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "v_store_analytics"
+            referencedColumns: ["store_id"]
+          },
         ]
       }
       sales: {
@@ -456,11 +512,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_demand_intelligence"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_product_performance"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "sales_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "v_store_analytics"
+            referencedColumns: ["store_id"]
           },
         ]
       }
@@ -557,7 +634,104 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_category_analytics: {
+        Row: {
+          available_units: number | null
+          category: string | null
+          conversion_pct: number | null
+          revenue: number | null
+          searches: number | null
+          selections: number | null
+          try_ons: number | null
+          units_sold: number | null
+          views: number | null
+        }
+        Relationships: []
+      }
+      v_demand_intelligence: {
+        Row: {
+          available_units: number | null
+          category: string | null
+          colour: string | null
+          demand_risk: string | null
+          name: string | null
+          product_code: string | null
+          product_id: string | null
+          searches: number | null
+          try_ons: number | null
+          units_sold: number | null
+          unmet_signal: number | null
+          views: number | null
+        }
+        Relationships: []
+      }
+      v_engagement_summary: {
+        Row: {
+          ai_conversations: number | null
+          demo_sales_rows: number | null
+          product_selections: number | null
+          product_views: number | null
+          qr_scans: number | null
+          revenue: number | null
+          searches: number | null
+          total_interactions: number | null
+          total_sessions: number | null
+          try_ons: number | null
+          units_sold: number | null
+        }
+        Relationships: []
+      }
+      v_product_performance: {
+        Row: {
+          available_units: number | null
+          category: string | null
+          colour: string | null
+          conversion_pct: number | null
+          find_in_store: number | null
+          gender: string | null
+          impressions: number | null
+          name: string | null
+          price: number | null
+          product_code: string | null
+          product_id: string | null
+          qr_scans: number | null
+          revenue: number | null
+          searches: number | null
+          selections: number | null
+          try_ons: number | null
+          tryon_to_sale_pct: number | null
+          units_sold: number | null
+          view_to_tryon_pct: number | null
+          views: number | null
+        }
+        Relationships: []
+      }
+      v_search_analytics: {
+        Row: {
+          last_searched: string | null
+          query: string | null
+          searches: number | null
+        }
+        Relationships: []
+      }
+      v_store_analytics: {
+        Row: {
+          city: string | null
+          code: string | null
+          conversion_pct: number | null
+          interactions: number | null
+          name: string | null
+          revenue: number | null
+          searches: number | null
+          selections: number | null
+          sessions: number | null
+          store_id: string | null
+          try_ons: number | null
+          units_sold: number | null
+          views: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_manage: { Args: { _user_id: string }; Returns: boolean }
