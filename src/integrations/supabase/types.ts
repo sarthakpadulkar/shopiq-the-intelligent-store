@@ -14,16 +14,564 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_interactions: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          session_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          session_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_interactions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "anonymous_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          is_demo: boolean
+          metadata: Json
+          product_id: string | null
+          query: string | null
+          session_id: string | null
+          store_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          is_demo?: boolean
+          metadata?: Json
+          product_id?: string | null
+          query?: string | null
+          session_id?: string | null
+          store_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          is_demo?: boolean
+          metadata?: Json
+          product_id?: string | null
+          query?: string | null
+          session_id?: string | null
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "anonymous_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      anonymous_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          is_demo: boolean
+          last_active_at: string
+          session_code: string
+          started_at: string
+          store_id: string | null
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          is_demo?: boolean
+          last_active_at?: string
+          session_code: string
+          started_at?: string
+          store_id?: string | null
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          is_demo?: boolean
+          last_active_at?: string
+          session_code?: string
+          started_at?: string
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anonymous_sessions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          metadata: Json
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      brands: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          available_units: number
+          floor: string | null
+          id: string
+          product_id: string
+          rack: string | null
+          section: string | null
+          sold_units: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          available_units?: number
+          floor?: string | null
+          id?: string
+          product_id: string
+          rack?: string | null
+          section?: string | null
+          sold_units?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          available_units?: number
+          floor?: string | null
+          id?: string
+          product_id?: string
+          rack?: string | null
+          section?: string | null
+          sold_units?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_integrations: {
+        Row: {
+          brand_id: string
+          config: Json
+          created_at: string
+          id: string
+          last_sync_at: string | null
+          provider: string
+          status: string
+        }
+        Insert: {
+          brand_id: string
+          config?: Json
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          provider: string
+          status?: string
+        }
+        Update: {
+          brand_id?: string
+          config?: Json
+          created_at?: string
+          id?: string
+          last_sync_at?: string | null
+          provider?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_integrations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          brand_id: string
+          category: string
+          colour: string
+          created_at: string
+          description: string | null
+          fit: string | null
+          gender: string
+          id: string
+          images: string[]
+          is_active: boolean
+          is_demo: boolean
+          is_new_arrival: boolean
+          is_trending: boolean
+          material: string | null
+          name: string
+          occasion: string | null
+          price: number
+          product_code: string
+          sizes: string[]
+          style: string | null
+          subcategory: string | null
+          try_on_type: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          category: string
+          colour: string
+          created_at?: string
+          description?: string | null
+          fit?: string | null
+          gender?: string
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          is_demo?: boolean
+          is_new_arrival?: boolean
+          is_trending?: boolean
+          material?: string | null
+          name: string
+          occasion?: string | null
+          price: number
+          product_code: string
+          sizes?: string[]
+          style?: string | null
+          subcategory?: string | null
+          try_on_type?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          category?: string
+          colour?: string
+          created_at?: string
+          description?: string | null
+          fit?: string | null
+          gender?: string
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          is_demo?: boolean
+          is_new_arrival?: boolean
+          is_trending?: boolean
+          material?: string | null
+          name?: string
+          occasion?: string | null
+          price?: number
+          product_code?: string
+          sizes?: string[]
+          style?: string | null
+          subcategory?: string | null
+          try_on_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          store_id: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          store_id?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          id: string
+          is_demo: boolean
+          product_id: string
+          sold_at: string
+          source: string
+          store_id: string
+          total_value: number
+          unit_price: number
+          units: number
+        }
+        Insert: {
+          id?: string
+          is_demo?: boolean
+          product_id: string
+          sold_at?: string
+          source?: string
+          store_id: string
+          total_value: number
+          unit_price: number
+          units: number
+        }
+        Update: {
+          id?: string
+          is_demo?: boolean
+          product_id?: string
+          sold_at?: string
+          source?: string
+          store_id?: string
+          total_value?: number
+          unit_price?: number
+          units?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stores: {
+        Row: {
+          address: string | null
+          brand_id: string
+          city: string
+          code: string
+          created_at: string
+          id: string
+          is_demo: boolean
+          name: string
+        }
+        Insert: {
+          address?: string | null
+          brand_id: string
+          city: string
+          code: string
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name: string
+        }
+        Update: {
+          address?: string | null
+          brand_id?: string
+          city?: string
+          code?: string
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stores_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      try_on_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          garment_count: number
+          id: string
+          session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          garment_count?: number
+          id?: string
+          session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          garment_count?: number
+          id?: string
+          session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "try_on_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "anonymous_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_manage: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "brand_admin" | "store_manager" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +698,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "brand_admin", "store_manager", "staff"],
+    },
   },
 } as const
