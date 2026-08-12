@@ -51,7 +51,7 @@ function Assistant() {
       const res = await assistantReply({
         data: { messages: next.map((m) => ({ role: m.role, content: m.content })) },
       });
-      const reply = typeof res === "string" ? res : (res?.reply ?? "");
+      const reply = res.message;
       setMessages([...next, { role: "assistant", content: reply }]);
       trackAiMessage("assistant", reply);
     } catch {

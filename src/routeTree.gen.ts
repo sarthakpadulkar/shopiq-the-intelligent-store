@@ -12,8 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
+import { Route as ShopAssistantRouteImport } from './routes/shop.assistant'
 import { Route as ShopFindStoreRouteImport } from './routes/shop.find-store'
 import { Route as ShopSearchRouteImport } from './routes/shop.search'
+import { Route as ShopTryOnRouteImport } from './routes/shop.try-on'
+import { Route as ShopProductIdRouteImport } from './routes/shop.product.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,6 +33,11 @@ const ShopIndexRoute = ShopIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ShopRoute,
 } as any)
+const ShopAssistantRoute = ShopAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => ShopRoute,
+} as any)
 const ShopFindStoreRoute = ShopFindStoreRouteImport.update({
   id: '/find-store',
   path: '/find-store',
@@ -40,35 +48,77 @@ const ShopSearchRoute = ShopSearchRouteImport.update({
   path: '/search',
   getParentRoute: () => ShopRoute,
 } as any)
+const ShopTryOnRoute = ShopTryOnRouteImport.update({
+  id: '/try-on',
+  path: '/try-on',
+  getParentRoute: () => ShopRoute,
+} as any)
+const ShopProductIdRoute = ShopProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
+  getParentRoute: () => ShopRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/shop': typeof ShopRouteWithChildren
+  '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
+  '/shop/try-on': typeof ShopTryOnRoute
   '/shop/': typeof ShopIndexRoute
+  '/shop/product/$id': typeof ShopProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
+  '/shop/try-on': typeof ShopTryOnRoute
   '/shop': typeof ShopIndexRoute
+  '/shop/product/$id': typeof ShopProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/shop': typeof ShopRouteWithChildren
+  '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
+  '/shop/try-on': typeof ShopTryOnRoute
   '/shop/': typeof ShopIndexRoute
+  '/shop/product/$id': typeof ShopProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/shop' | '/shop/find-store' | '/shop/search' | '/shop/'
+  fullPaths:
+    | '/'
+    | '/shop'
+    | '/shop/assistant'
+    | '/shop/find-store'
+    | '/shop/search'
+    | '/shop/try-on'
+    | '/shop/'
+    | '/shop/product/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/shop/find-store' | '/shop/search' | '/shop'
+  to:
+    | '/'
+    | '/shop/assistant'
+    | '/shop/find-store'
+    | '/shop/search'
+    | '/shop/try-on'
+    | '/shop'
+    | '/shop/product/$id'
   id:
-    '__root__' | '/' | '/shop' | '/shop/find-store' | '/shop/search' | '/shop/'
+    | '__root__'
+    | '/'
+    | '/shop'
+    | '/shop/assistant'
+    | '/shop/find-store'
+    | '/shop/search'
+    | '/shop/try-on'
+    | '/shop/'
+    | '/shop/product/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -99,6 +149,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/shop/assistant': {
+      id: '/shop/assistant'
+      path: '/assistant'
+      fullPath: '/shop/assistant'
+      preLoaderRoute: typeof ShopAssistantRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/shop/find-store': {
       id: '/shop/find-store'
       path: '/find-store'
@@ -113,19 +170,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopSearchRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/shop/try-on': {
+      id: '/shop/try-on'
+      path: '/try-on'
+      fullPath: '/shop/try-on'
+      preLoaderRoute: typeof ShopTryOnRouteImport
+      parentRoute: typeof ShopRoute
+    }
+    '/shop/product/$id': {
+      id: '/shop/product/$id'
+      path: '/product/$id'
+      fullPath: '/shop/product/$id'
+      preLoaderRoute: typeof ShopProductIdRouteImport
+      parentRoute: typeof ShopRoute
+    }
   }
 }
 
 interface ShopRouteChildren {
+  ShopAssistantRoute: typeof ShopAssistantRoute
   ShopFindStoreRoute: typeof ShopFindStoreRoute
   ShopSearchRoute: typeof ShopSearchRoute
+  ShopTryOnRoute: typeof ShopTryOnRoute
   ShopIndexRoute: typeof ShopIndexRoute
+  ShopProductIdRoute: typeof ShopProductIdRoute
 }
 
 const ShopRouteChildren: ShopRouteChildren = {
+  ShopAssistantRoute: ShopAssistantRoute,
   ShopFindStoreRoute: ShopFindStoreRoute,
   ShopSearchRoute: ShopSearchRoute,
+  ShopTryOnRoute: ShopTryOnRoute,
   ShopIndexRoute: ShopIndexRoute,
+  ShopProductIdRoute: ShopProductIdRoute,
 }
 
 const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
