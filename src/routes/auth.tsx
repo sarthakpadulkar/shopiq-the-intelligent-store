@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -67,14 +66,6 @@ function AuthPage() {
     }
   }
 
-  async function google() {
-    try {
-      await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    } catch {
-      toast.error("Google sign-in is unavailable right now.");
-    }
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full max-w-md">
@@ -91,15 +82,7 @@ function AuthPage() {
             Dashboard access is role-gated. Shoppers never need an account.
           </p>
 
-          <Button variant="glass" className="mt-6 w-full" onClick={() => void google()}>
-            Continue with Google
-          </Button>
-
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" /> or email <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <form onSubmit={submit} className="space-y-4">
+          <form onSubmit={submit} className="mt-6 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Work email</Label>
               <Input
