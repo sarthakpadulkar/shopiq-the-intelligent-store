@@ -79,7 +79,7 @@ const METRICS = [
 function Landing() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="aurora" aria-hidden />
+
 
       <header className="relative z-10 mx-auto flex max-w-[1400px] items-center gap-4 px-6 py-6">
         <span className="font-display text-2xl font-bold tracking-tight">
