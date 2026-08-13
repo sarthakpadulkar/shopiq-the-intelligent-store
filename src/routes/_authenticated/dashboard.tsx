@@ -114,6 +114,16 @@ function Dashboard() {
           <p className="mt-8 text-sm text-muted-foreground">Loading analytics…</p>
         ) : null}
 
+        {data && data.products.length === 0 && !data.summary ? (
+          <GlassCard className="mt-8 p-8">
+            <h2 className="font-display text-xl font-semibold">Awaiting staff access</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Your account is signed in but has no brand or store role yet, so analytics are
+              hidden. An administrator needs to assign your role before data appears here.
+            </p>
+          </GlassCard>
+        ) : null}
+
         {data ? (
           <>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
