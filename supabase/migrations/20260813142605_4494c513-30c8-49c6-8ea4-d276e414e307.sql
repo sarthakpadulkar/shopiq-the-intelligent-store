@@ -1,0 +1,2 @@
+grant select on public.v_category_analytics, public.v_demand_intelligence, public.v_engagement_summary, public.v_product_performance, public.v_search_analytics, public.v_store_analytics to authenticated;
+grant select on public.v_category_analytics, public.v_demand_intelligence, public.v_engagement_summary, public.v_product_performance, public.v_search_analytics, public.v_store_analytics to service_role;
