@@ -12,9 +12,15 @@ export const Route = createFileRoute("/shop/find-store")({
   head: () => ({
     meta: [
       { title: "Find it in store — ShopIQ" },
-      { name: "description", content: "Live availability of every product across UrbanEdge stores." },
+      {
+        name: "description",
+        content: "Live availability of every product across UrbanEdge stores.",
+      },
       { property: "og:title", content: "Find it in store — ShopIQ" },
-      { property: "og:description", content: "Live availability of every product across UrbanEdge stores." },
+      {
+        property: "og:description",
+        content: "Live availability of every product across UrbanEdge stores.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

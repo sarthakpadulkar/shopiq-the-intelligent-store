@@ -9,9 +9,15 @@ export const Route = createFileRoute("/shop/")({
   head: () => ({
     meta: [
       { title: "Welcome to ShopIQ" },
-      { name: "description", content: "Start an anonymous in-store session with the ShopIQ AI retail assistant." },
+      {
+        name: "description",
+        content: "Start an anonymous in-store session with the ShopIQ AI retail assistant.",
+      },
       { property: "og:title", content: "Welcome to ShopIQ" },
-      { property: "og:description", content: "Start an anonymous in-store session with the ShopIQ AI retail assistant." },
+      {
+        property: "og:description",
+        content: "Start an anonymous in-store session with the ShopIQ AI retail assistant.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -20,10 +26,30 @@ export const Route = createFileRoute("/shop/")({
 });
 
 const ENTRIES = [
-  { to: "/shop/search", icon: Search, title: "Find a product", copy: "Describe it in your own words." },
-  { to: "/shop/assistant", icon: Sparkles, title: "Ask the AI stylist", copy: "Outfit advice for any occasion." },
-  { to: "/shop/try-on", icon: Camera, title: "Virtual try-on", copy: "One photo, unlimited garments." },
-  { to: "/shop/find-store", icon: Store, title: "Find in store", copy: "See which aisle has your size." },
+  {
+    to: "/shop/search",
+    icon: Search,
+    title: "Find a product",
+    copy: "Describe it in your own words.",
+  },
+  {
+    to: "/shop/assistant",
+    icon: Sparkles,
+    title: "Ask the AI stylist",
+    copy: "Outfit advice for any occasion.",
+  },
+  {
+    to: "/shop/try-on",
+    icon: Camera,
+    title: "Virtual try-on",
+    copy: "One photo, unlimited garments.",
+  },
+  {
+    to: "/shop/find-store",
+    icon: Store,
+    title: "Find in store",
+    copy: "See which aisle has your size.",
+  },
 ] as const;
 
 function ShopWelcome() {
@@ -35,16 +61,29 @@ function ShopWelcome() {
   }
 
   return (
-    <div className="space-y-10 py-6">
-      <div className="text-center">
+    <div className="space-y-12 py-6">
+      <div className="mx-auto max-w-2xl text-center">
         <DemoBadge className="mx-auto" />
         <h1 className="mt-6 font-display text-5xl font-bold tracking-tight sm:text-6xl">
-          Welcome to <span className="text-lux">SHOPIQ</span>
+          Your AI-powered <span className="text-lux">shopping assistant</span>
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+        <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
           No login. No personal data. Just tell us what you are looking for and the store answers
           instantly.
         </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Button
+            variant="hero"
+            size="lg"
+            onClick={() => void begin("/shop/search")}
+            className="min-w-44"
+          >
+            Start shopping
+          </Button>
+          <Button variant="glass" size="lg" asChild>
+            <Link to="/">Explore ShopIQ</Link>
+          </Button>
+        </div>
       </div>
 
       <div>

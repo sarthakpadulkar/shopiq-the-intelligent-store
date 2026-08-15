@@ -10,5 +10,5 @@ const schema = z.object({
 });
 
 export const generateTryOn = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => schema.parse(input))
+  .validator((input: unknown) => schema.parse(input))
   .handler(async ({ data }) => runVirtualTryOn(data));

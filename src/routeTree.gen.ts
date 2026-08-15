@@ -11,15 +11,31 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as RequestDemoRouteImport } from './routes/request-demo'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AdminAiInsightsRouteImport } from './routes/admin.ai-insights'
+import { Route as AdminDemandIntelligenceRouteImport } from './routes/admin.demand-intelligence'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
+import { Route as AdminProductAnalyticsRouteImport } from './routes/admin.product-analytics'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminSalesRouteImport } from './routes/admin.sales'
+import { Route as AdminSearchAnalyticsRouteImport } from './routes/admin.search-analytics'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminStoresRouteImport } from './routes/admin.stores'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopAssistantRouteImport } from './routes/shop.assistant'
 import { Route as ShopFindStoreRouteImport } from './routes/shop.find-store'
 import { Route as ShopSearchRouteImport } from './routes/shop.search'
 import { Route as ShopTryOnRouteImport } from './routes/shop.try-on'
 import { Route as ShopProductIdRouteImport } from './routes/shop.product.$id'
+import { Route as ShopQrIdRouteImport } from './routes/shop.qr.$id'
+import { Route as ShopTryOnResultRouteImport } from './routes/shop.try-on.result'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,9 +46,24 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeaturesRoute = FeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestDemoRoute = RequestDemoRouteImport.update({
+  id: '/request-demo',
+  path: '/request-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -44,6 +75,61 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AdminAiInsightsRoute = AdminAiInsightsRouteImport.update({
+  id: '/ai-insights',
+  path: '/ai-insights',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDemandIntelligenceRoute = AdminDemandIntelligenceRouteImport.update({
+  id: '/demand-intelligence',
+  path: '/demand-intelligence',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOverviewRoute = AdminOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductAnalyticsRoute = AdminProductAnalyticsRouteImport.update({
+  id: '/product-analytics',
+  path: '/product-analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSalesRoute = AdminSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSearchAnalyticsRoute = AdminSearchAnalyticsRouteImport.update({
+  id: '/search-analytics',
+  path: '/search-analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminStoresRoute = AdminStoresRouteImport.update({
+  id: '/stores',
+  path: '/stores',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ShopIndexRoute = ShopIndexRouteImport.update({
   id: '/',
@@ -75,87 +161,196 @@ const ShopProductIdRoute = ShopProductIdRouteImport.update({
   path: '/product/$id',
   getParentRoute: () => ShopRoute,
 } as any)
+const ShopQrIdRoute = ShopQrIdRouteImport.update({
+  id: '/qr/$id',
+  path: '/qr/$id',
+  getParentRoute: () => ShopRoute,
+} as any)
+const ShopTryOnResultRoute = ShopTryOnResultRouteImport.update({
+  id: '/result',
+  path: '/result',
+  getParentRoute: () => ShopTryOnRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/features': typeof FeaturesRoute
+  '/request-demo': typeof RequestDemoRoute
   '/shop': typeof ShopRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/ai-insights': typeof AdminAiInsightsRoute
+  '/admin/demand-intelligence': typeof AdminDemandIntelligenceRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/product-analytics': typeof AdminProductAnalyticsRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sales': typeof AdminSalesRoute
+  '/admin/search-analytics': typeof AdminSearchAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/stores': typeof AdminStoresRoute
   '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
-  '/shop/try-on': typeof ShopTryOnRoute
+  '/shop/try-on': typeof ShopTryOnRouteWithChildren
   '/shop/': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
+  '/shop/qr/$id': typeof ShopQrIdRoute
+  '/shop/try-on/result': typeof ShopTryOnResultRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/features': typeof FeaturesRoute
+  '/request-demo': typeof RequestDemoRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/ai-insights': typeof AdminAiInsightsRoute
+  '/admin/demand-intelligence': typeof AdminDemandIntelligenceRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/product-analytics': typeof AdminProductAnalyticsRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sales': typeof AdminSalesRoute
+  '/admin/search-analytics': typeof AdminSearchAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/stores': typeof AdminStoresRoute
   '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
-  '/shop/try-on': typeof ShopTryOnRoute
+  '/shop/try-on': typeof ShopTryOnRouteWithChildren
   '/shop': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
+  '/shop/qr/$id': typeof ShopQrIdRoute
+  '/shop/try-on/result': typeof ShopTryOnResultRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/features': typeof FeaturesRoute
+  '/request-demo': typeof RequestDemoRoute
   '/shop': typeof ShopRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/ai-insights': typeof AdminAiInsightsRoute
+  '/admin/demand-intelligence': typeof AdminDemandIntelligenceRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/product-analytics': typeof AdminProductAnalyticsRoute
+  '/admin/products': typeof AdminProductsRoute
+  '/admin/sales': typeof AdminSalesRoute
+  '/admin/search-analytics': typeof AdminSearchAnalyticsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/stores': typeof AdminStoresRoute
   '/shop/assistant': typeof ShopAssistantRoute
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
-  '/shop/try-on': typeof ShopTryOnRoute
+  '/shop/try-on': typeof ShopTryOnRouteWithChildren
   '/shop/': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
+  '/shop/qr/$id': typeof ShopQrIdRoute
+  '/shop/try-on/result': typeof ShopTryOnResultRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/auth'
+    | '/features'
+    | '/request-demo'
     | '/shop'
     | '/dashboard'
+    | '/admin/ai-insights'
+    | '/admin/demand-intelligence'
+    | '/admin/inventory'
+    | '/admin/login'
+    | '/admin/overview'
+    | '/admin/product-analytics'
+    | '/admin/products'
+    | '/admin/sales'
+    | '/admin/search-analytics'
+    | '/admin/settings'
+    | '/admin/stores'
     | '/shop/assistant'
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
     | '/shop/'
     | '/shop/product/$id'
+    | '/shop/qr/$id'
+    | '/shop/try-on/result'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
+    | '/features'
+    | '/request-demo'
     | '/dashboard'
+    | '/admin/ai-insights'
+    | '/admin/demand-intelligence'
+    | '/admin/inventory'
+    | '/admin/login'
+    | '/admin/overview'
+    | '/admin/product-analytics'
+    | '/admin/products'
+    | '/admin/sales'
+    | '/admin/search-analytics'
+    | '/admin/settings'
+    | '/admin/stores'
     | '/shop/assistant'
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
     | '/shop'
     | '/shop/product/$id'
+    | '/shop/qr/$id'
+    | '/shop/try-on/result'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/auth'
+    | '/features'
+    | '/request-demo'
     | '/shop'
     | '/_authenticated/dashboard'
+    | '/admin/ai-insights'
+    | '/admin/demand-intelligence'
+    | '/admin/inventory'
+    | '/admin/login'
+    | '/admin/overview'
+    | '/admin/product-analytics'
+    | '/admin/products'
+    | '/admin/sales'
+    | '/admin/search-analytics'
+    | '/admin/settings'
+    | '/admin/stores'
     | '/shop/assistant'
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
     | '/shop/'
     | '/shop/product/$id'
+    | '/shop/qr/$id'
+    | '/shop/try-on/result'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  FeaturesRoute: typeof FeaturesRoute
+  RequestDemoRoute: typeof RequestDemoRoute
   ShopRoute: typeof ShopRouteWithChildren
 }
 
@@ -175,11 +370,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request-demo': {
+      id: '/request-demo'
+      path: '/request-demo'
+      fullPath: '/request-demo'
+      preLoaderRoute: typeof RequestDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shop': {
@@ -195,6 +411,83 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/ai-insights': {
+      id: '/admin/ai-insights'
+      path: '/ai-insights'
+      fullPath: '/admin/ai-insights'
+      preLoaderRoute: typeof AdminAiInsightsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/demand-intelligence': {
+      id: '/admin/demand-intelligence'
+      path: '/demand-intelligence'
+      fullPath: '/admin/demand-intelligence'
+      preLoaderRoute: typeof AdminDemandIntelligenceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/overview': {
+      id: '/admin/overview'
+      path: '/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AdminOverviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/product-analytics': {
+      id: '/admin/product-analytics'
+      path: '/product-analytics'
+      fullPath: '/admin/product-analytics'
+      preLoaderRoute: typeof AdminProductAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sales': {
+      id: '/admin/sales'
+      path: '/sales'
+      fullPath: '/admin/sales'
+      preLoaderRoute: typeof AdminSalesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/search-analytics': {
+      id: '/admin/search-analytics'
+      path: '/search-analytics'
+      fullPath: '/admin/search-analytics'
+      preLoaderRoute: typeof AdminSearchAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/stores': {
+      id: '/admin/stores'
+      path: '/stores'
+      fullPath: '/admin/stores'
+      preLoaderRoute: typeof AdminStoresRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/shop/': {
       id: '/shop/'
@@ -238,6 +531,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopProductIdRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/shop/qr/$id': {
+      id: '/shop/qr/$id'
+      path: '/qr/$id'
+      fullPath: '/shop/qr/$id'
+      preLoaderRoute: typeof ShopQrIdRouteImport
+      parentRoute: typeof ShopRoute
+    }
+    '/shop/try-on/result': {
+      id: '/shop/try-on/result'
+      path: '/result'
+      fullPath: '/shop/try-on/result'
+      preLoaderRoute: typeof ShopTryOnResultRouteImport
+      parentRoute: typeof ShopTryOnRoute
+    }
   }
 }
 
@@ -252,22 +559,66 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AdminRouteChildren {
+  AdminAiInsightsRoute: typeof AdminAiInsightsRoute
+  AdminDemandIntelligenceRoute: typeof AdminDemandIntelligenceRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminOverviewRoute: typeof AdminOverviewRoute
+  AdminProductAnalyticsRoute: typeof AdminProductAnalyticsRoute
+  AdminProductsRoute: typeof AdminProductsRoute
+  AdminSalesRoute: typeof AdminSalesRoute
+  AdminSearchAnalyticsRoute: typeof AdminSearchAnalyticsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStoresRoute: typeof AdminStoresRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAiInsightsRoute: AdminAiInsightsRoute,
+  AdminDemandIntelligenceRoute: AdminDemandIntelligenceRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminOverviewRoute: AdminOverviewRoute,
+  AdminProductAnalyticsRoute: AdminProductAnalyticsRoute,
+  AdminProductsRoute: AdminProductsRoute,
+  AdminSalesRoute: AdminSalesRoute,
+  AdminSearchAnalyticsRoute: AdminSearchAnalyticsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminStoresRoute: AdminStoresRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ShopTryOnRouteChildren {
+  ShopTryOnResultRoute: typeof ShopTryOnResultRoute
+}
+
+const ShopTryOnRouteChildren: ShopTryOnRouteChildren = {
+  ShopTryOnResultRoute: ShopTryOnResultRoute,
+}
+
+const ShopTryOnRouteWithChildren = ShopTryOnRoute._addFileChildren(
+  ShopTryOnRouteChildren,
+)
+
 interface ShopRouteChildren {
   ShopAssistantRoute: typeof ShopAssistantRoute
   ShopFindStoreRoute: typeof ShopFindStoreRoute
   ShopSearchRoute: typeof ShopSearchRoute
-  ShopTryOnRoute: typeof ShopTryOnRoute
+  ShopTryOnRoute: typeof ShopTryOnRouteWithChildren
   ShopIndexRoute: typeof ShopIndexRoute
   ShopProductIdRoute: typeof ShopProductIdRoute
+  ShopQrIdRoute: typeof ShopQrIdRoute
 }
 
 const ShopRouteChildren: ShopRouteChildren = {
   ShopAssistantRoute: ShopAssistantRoute,
   ShopFindStoreRoute: ShopFindStoreRoute,
   ShopSearchRoute: ShopSearchRoute,
-  ShopTryOnRoute: ShopTryOnRoute,
+  ShopTryOnRoute: ShopTryOnRouteWithChildren,
   ShopIndexRoute: ShopIndexRoute,
   ShopProductIdRoute: ShopProductIdRoute,
+  ShopQrIdRoute: ShopQrIdRoute,
 }
 
 const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
@@ -275,7 +626,10 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  FeaturesRoute: FeaturesRoute,
+  RequestDemoRoute: RequestDemoRoute,
   ShopRoute: ShopRouteWithChildren,
 }
 export const routeTree = rootRouteImport

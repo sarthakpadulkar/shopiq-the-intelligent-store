@@ -8,13 +8,24 @@ export interface TryOnGarment {
   tryOnType: Product["try_on_type"];
 }
 
+/**
+ * Result of a try-on attempt. `demo: true` means the AI provider was not
+ * available and a clearly-labelled preview was shown instead — never a fake
+ * photorealistic result.
+ */
+export interface TryOnResult {
+  image?: string;
+  demo?: boolean;
+  reason?: string;
+}
+
 export interface TryOnState {
   /** The single camera photo — captured once, reused for every garment. */
   personImage: string | null;
   startedAt: number | null;
   current: TryOnGarment | null;
   history: TryOnGarment[];
-  results: Record<string, string>; // productId -> generated look
+  results: Record<string, TryOnResult>; // productId -> generated look
   status: "idle" | "generating" | "ready" | "error";
   error: string | null;
 }
@@ -67,10 +78,11 @@ export const tryOnStore = {
   beginGenerating(garment: TryOnGarment) {
     set({ current: garment, status: "generating", error: null });
   },
-  completed(garment: TryOnGarment, image: string) {
+  completed(garment: TryOnGarment, result: TryOnResult) {
     set({
       status: "ready",
-      results: { ...state.results, [garment.productId]: image },
+      error: null,
+      results: { ...state.results, [garment.productId]: result },
       history: [garment, ...state.history.filter((g) => g.productId !== garment.productId)].slice(
         0,
         12,

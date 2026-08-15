@@ -76,3 +76,35 @@ export const catalogueQuery = {
   queryFn: fetchCatalogue,
   staleTime: 60_000,
 };
+
+export interface AdminCatalogue {
+  products: Product[];
+  inventory: InventoryRow[];
+  stores: StoreRow[];
+  brands: { id: string; name: string }[];
+}
+
+export async function fetchAdminCatalogue(): Promise<AdminCatalogue> {
+  const [products, inventory, stores, brands] = await Promise.all([
+    supabase
+      .from("products")
+      .select(`${PRODUCT_COLS}, is_active`)
+      .order("created_at", { ascending: true }),
+    fetchInventory(),
+    fetchStores(),
+    supabase.from("brands").select("id, name"),
+  ]);
+  if (products.error) throw products.error;
+  return {
+    products: (products.data ?? []).map(normalise),
+    inventory,
+    stores,
+    brands: (brands.data ?? []) as { id: string; name: string }[],
+  };
+}
+
+export const adminCatalogueQuery = {
+  queryKey: ["admin-catalogue"],
+  queryFn: fetchAdminCatalogue,
+  staleTime: 30_000,
+};

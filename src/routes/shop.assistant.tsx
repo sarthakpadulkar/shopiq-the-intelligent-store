@@ -12,9 +12,15 @@ export const Route = createFileRoute("/shop/assistant")({
   head: () => ({
     meta: [
       { title: "AI Stylist — ShopIQ" },
-      { name: "description", content: "Chat with the ShopIQ stylist for outfit advice grounded in this store's stock." },
+      {
+        name: "description",
+        content: "Chat with the ShopIQ stylist for outfit advice grounded in this store's stock.",
+      },
       { property: "og:title", content: "AI Stylist — ShopIQ" },
-      { property: "og:description", content: "Chat with the ShopIQ stylist for outfit advice grounded in this store's stock." },
+      {
+        property: "og:description",
+        content: "Chat with the ShopIQ stylist for outfit advice grounded in this store's stock.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -19,6 +19,8 @@ export interface Product {
   try_on_type: TryOnType;
   is_new_arrival: boolean;
   is_trending: boolean;
+  /** Present only on admin catalogue queries. */
+  is_active?: boolean;
 }
 
 export interface InventoryRow {

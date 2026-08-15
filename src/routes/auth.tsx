@@ -123,9 +123,22 @@ function AuthPage() {
                 placeholder="••••••••"
               />
             </div>
-            <Button type="submit" variant="hero" className="w-full" disabled={busy}>
-              {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
-            </Button>
+            <div className="flex gap-2">
+              <Button type="submit" variant="hero" className="flex-1" disabled={busy}>
+                {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+              </Button>
+              {mode === "signin" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={fillDemoCredentials}
+                  disabled={busy}
+                >
+                  Try demo
+                </Button>
+              )}
+            </div>
           </form>
 
           <button
@@ -133,9 +146,7 @@ function AuthPage() {
             className="mt-5 w-full text-center text-xs text-muted-foreground hover:text-foreground"
             onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           >
-            {mode === "signin"
-              ? "No account yet? Create one"
-              : "Already have an account? Sign in"}
+            {mode === "signin" ? "No account yet? Create one" : "Already have an account? Sign in"}
           </button>
 
           <div className="relative my-6">
@@ -154,6 +165,10 @@ function AuthPage() {
           </Button>
           <p className="mt-2 text-center text-xs text-muted-foreground">
             No credentials needed — opens the dashboard with sample data.
+            <br />
+            <span className="text-aqua font-medium">
+              Or use: demo@shopiq.com / demo-password-123
+            </span>
           </p>
         </GlassCard>
 

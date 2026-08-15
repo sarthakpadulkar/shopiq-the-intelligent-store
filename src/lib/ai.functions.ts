@@ -14,7 +14,7 @@ import {
 const searchSchema = z.object({ query: z.string().min(1).max(400) });
 
 export const aiSearch = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => searchSchema.parse(input))
+  .validator((input: unknown) => searchSchema.parse(input))
   .handler(async ({ data }) => {
     const catalogue = await loadCatalogue();
     const result = await askGateway(
@@ -63,7 +63,7 @@ const assistantSchema = z.object({
 });
 
 export const assistantReply = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => assistantSchema.parse(input))
+  .validator((input: unknown) => assistantSchema.parse(input))
   .handler(async ({ data }) => {
     const catalogue = await loadCatalogue();
     const result = await askGateway(
@@ -94,7 +94,7 @@ export const assistantReply = createServerFn({ method: "POST" })
 const lookSchema = z.object({ productId: z.string().uuid() });
 
 export const completeTheLook = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => lookSchema.parse(input))
+  .validator((input: unknown) => lookSchema.parse(input))
   .handler(async ({ data }) => {
     const catalogue = await loadCatalogue();
     const base = catalogue.find((c) => c.id === data.productId);

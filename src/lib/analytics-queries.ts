@@ -26,7 +26,11 @@ export async function fetchDashboard(): Promise<DashboardData> {
     supabase.from("v_product_performance").select("*").order("revenue", { ascending: false }),
     supabase.from("v_category_analytics").select("*").order("revenue", { ascending: false }),
     supabase.from("v_store_analytics").select("*").order("revenue", { ascending: false }),
-    supabase.from("v_search_analytics").select("*").order("searches", { ascending: false }).limit(20),
+    supabase
+      .from("v_search_analytics")
+      .select("*")
+      .order("searches", { ascending: false })
+      .limit(20),
     supabase.from("v_demand_intelligence").select("*").order("unmet_signal", { ascending: false }),
   ]);
 
