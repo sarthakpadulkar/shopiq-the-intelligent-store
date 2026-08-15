@@ -1,4 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { enableDemoMode, isDemoMode } from "@/lib/demo-mode";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -36,10 +38,25 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (isDemoMode()) {
+      navigate({ to: "/dashboard" });
+      return;
+    }
     void supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
   }, [navigate]);
+
+  function fillDemoCredentials() {
+    setEmail("demo@shopiq.com");
+    setPassword("demo-password-123");
+    toast.success("Demo credentials filled in. Click Sign in to continue.");
+  }
+
+  function signInDemo() {
+    enableDemoMode();
+    navigate({ to: "/dashboard" });
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -120,6 +137,24 @@ function AuthPage() {
               ? "No account yet? Create one"
               : "Already have an account? Sign in"}
           </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border/60" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-background px-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
+
+          <Button variant="glass" className="w-full" onClick={signInDemo}>
+            <Sparkles /> Explore with demo staff login
+          </Button>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            No credentials needed — opens the dashboard with sample data.
+          </p>
         </GlassCard>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">

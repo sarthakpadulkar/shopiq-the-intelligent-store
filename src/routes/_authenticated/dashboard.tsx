@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { dashboardQuery, type DemandIntelligence } from "@/lib/analytics-queries";
+import { disableDemoMode } from "@/lib/demo-mode";
 import { compact, inr, pct } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -63,6 +64,7 @@ function Dashboard() {
   const { data, isLoading, error } = useQuery(dashboardQuery);
 
   async function signOut() {
+    disableDemoMode();
     await supabase.auth.signOut();
     navigate({ to: "/auth" });
   }

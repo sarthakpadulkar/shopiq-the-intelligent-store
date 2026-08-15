@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { fetchDemoDashboard } from "@/lib/demo-data";
+import { isDemoMode } from "@/lib/demo-mode";
 
 export type EngagementSummary = Tables<"v_engagement_summary">;
 export type ProductPerformance = Tables<"v_product_performance">;
@@ -18,6 +20,7 @@ export interface DashboardData {
 }
 
 export async function fetchDashboard(): Promise<DashboardData> {
+  if (isDemoMode()) return fetchDemoDashboard();
   const [summary, products, categories, stores, searches, demand] = await Promise.all([
     supabase.from("v_engagement_summary").select("*").maybeSingle(),
     supabase.from("v_product_performance").select("*").order("revenue", { ascending: false }),
