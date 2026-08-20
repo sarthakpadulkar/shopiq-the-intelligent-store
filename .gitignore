@@ -30,3 +30,30 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & secrets — NEVER commit
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Supabase
+supabase/.temp/
+supabase/.branches/
+
+# Keys, certs, tokens
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+*.jks
+secrets.json
+credentials.json
+service-account*.json
+
+# Build / cache artifacts
+.cache/
+.parcel-cache/
+.next/
+.nuxt/

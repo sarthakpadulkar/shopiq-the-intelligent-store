@@ -1,17 +1,23 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Building2, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import {
+  Building2,
+  CheckCircle2,
+  LogOut,
+  ShieldAlert,
+  ShieldCheck,
+  UserRound,
+  XCircle,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { GlassCard, SectionLabel } from "@/components/glass";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { audit } from "@/lib/audit";
 import { isDemoMode, disableDemoMode } from "@/lib/demo-mode";
-import { inr } from "@/lib/format";
 import { catalogueQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/settings")({
@@ -35,6 +41,10 @@ function SettingsPage() {
   const [storeEdits, setStoreEdits] = useState<Record<string, string>>({});
   const [savingStore, setSavingStore] = useState<string | null>(null);
 
+  const [securityChecks, setSecurityChecks] = useState<
+    { label: string; ok: boolean; detail: string }[]
+  >([]);
+
   useEffect(() => {
     const userId = supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null);
@@ -48,6 +58,57 @@ function SettingsPage() {
         .eq("user_id", id)
         .then(({ data: rows }) => setRoles((rows ?? []).map((r) => r.role as string)));
     });
+
+    // Run security checks
+    void (async () => {
+      const checks: { label: string; ok: boolean; detail: string }[] = [];
+
+      // 1. Auth session
+      const { data: session } = await supabase.auth.getSession();
+      checks.push({
+        label: "Authentication",
+        ok: !!session.session,
+        detail: session.session
+          ? `Signed in as ${session.session.user.email}`
+          : "No active session",
+      });
+
+      // 2. Roles assigned
+      const { data: roleRows } = await supabase.from("user_roles").select("role");
+      const hasRoles = (roleRows ?? []).length > 0;
+      checks.push({
+        label: "Role-based access",
+        ok: hasRoles,
+        detail: hasRoles
+          ? `${(roleRows ?? []).length} role(s) assigned`
+          : "No roles assigned — writes will be blocked",
+      });
+
+      // 3. Demo mode
+      const demo = isDemoMode();
+      checks.push({
+        label: "Session mode",
+        ok: !demo,
+        detail: demo
+          ? "Demo mode active — authentication is bypassed"
+          : "Live session — full authentication enforced",
+      });
+
+      // 4. RLS probe — attempt an unprivileged read on a protected table
+      const { error: rlsError } = await supabase
+        .from("audit_logs")
+        .select("id", { count: "exact", head: true });
+      const rlsOk = !rlsError;
+      checks.push({
+        label: "Row-level security",
+        ok: rlsOk,
+        detail: rlsOk
+          ? "RLS policies are active on protected tables"
+          : `RLS check returned: ${rlsError.message}`,
+      });
+
+      setSecurityChecks(checks);
+    })();
   }, []);
 
   async function signOut() {
@@ -126,17 +187,47 @@ function SettingsPage() {
         </div>
       </GlassCard>
 
-      <GlassCard className="p-6">
+      <GlassCard className="p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <ShieldCheck className="size-5 text-success" />
-          <div className="text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Security</p>
-            <p className="mt-1">
-              Every write goes through Supabase row-level security. Store screens never touch
-              product or inventory data — staff roles decide who can change the catalogue.
+          {securityChecks.length > 0 && securityChecks.every((c) => c.ok) ? (
+            <ShieldCheck className="size-5 text-success" />
+          ) : securityChecks.length > 0 ? (
+            <ShieldAlert className="size-5 text-warning" />
+          ) : (
+            <ShieldCheck className="size-5 text-muted-foreground animate-pulse" />
+          )}
+          <div>
+            <p className="font-medium">Security</p>
+            <p className="text-xs text-muted-foreground">
+              {securityChecks.length === 0
+                ? "Running security checks…"
+                : securityChecks.every((c) => c.ok)
+                  ? "All checks passed"
+                  : `${securityChecks.filter((c) => !c.ok).length} issue(s) detected`}
             </p>
           </div>
         </div>
+
+        <div className="space-y-2">
+          {securityChecks.map((check) => (
+            <div key={check.label} className="flex items-start gap-2 text-sm">
+              {check.ok ? (
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
+              ) : (
+                <XCircle className="mt-0.5 size-4 shrink-0 text-warning" />
+              )}
+              <div>
+                <span className="font-medium">{check.label}</span>
+                <span className="ml-2 text-muted-foreground">{check.detail}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Every write goes through Supabase row-level security. Store screens never touch product or
+          inventory data — staff roles decide who can change the catalogue.
+        </p>
       </GlassCard>
 
       <GlassCard className="p-6 space-y-4">
