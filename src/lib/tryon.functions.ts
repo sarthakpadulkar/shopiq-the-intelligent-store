@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { runVirtualTryOn } from "@/lib/tryon.server";
 
 const schema = z.object({
@@ -11,4 +12,9 @@ const schema = z.object({
 
 export const generateTryOn = createServerFn({ method: "POST" })
   .validator((input: unknown) => schema.parse(input))
-  .handler(async ({ data }) => runVirtualTryOn(data));
+  .handler(async ({ data }) => {
+    if (!checkRateLimit("generateTryOn", 5, 300_000)) {
+      return { status: "unavailable" as const, reason: "rate_limited" };
+    }
+    return runVirtualTryOn(data);
+  });

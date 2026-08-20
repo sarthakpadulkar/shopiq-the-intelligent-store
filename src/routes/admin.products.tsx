@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Boxes, PackagePlus, Search } from "lucide-react";
+import { Boxes, PackagePlus, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { GlassCard, SectionLabel } from "@/components/glass";
+import { ImageUpload } from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,6 +23,7 @@ import { audit } from "@/lib/audit";
 import { inr, stockLabel, stockStatus } from "@/lib/format";
 import { adminCatalogueQuery } from "@/lib/queries";
 import type { Product } from "@/lib/types";
+import { uploadProductImage } from "@/lib/upload";
 
 export const Route = createFileRoute("/admin/products")({
   head: () => ({
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/admin/products")({
 
 const CATEGORIES = ["Men", "Women", "Unisex", "Footwear", "Accessories"];
 const TRY_ON_TYPES = ["upper_body", "lower_body", "full_body", "accessory"] as const;
+const GENDERS = ["Men", "Women", "Unisex"];
 
 function ProductsPage() {
   const { data, isLoading } = useQuery(adminCatalogueQuery);
@@ -46,6 +49,7 @@ function ProductsPage() {
   const [adding, setAdding] = useState(false);
   const [price, setPrice] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<Product | null>(null);
 
   const products = useMemo(() => {
     const list = data?.products ?? [];
@@ -94,6 +98,22 @@ function ProductsPage() {
     await queryClient.invalidateQueries({ queryKey: ["admin-catalogue"] });
   }
 
+  async function deleteProduct(p: Product) {
+    setSaving(p.id);
+    await supabase.from("sales").delete().eq("product_id", p.id);
+    await supabase.from("inventory").delete().eq("product_id", p.id);
+    const { error } = await supabase.from("products").delete().eq("id", p.id);
+    setSaving(null);
+    if (error) {
+      toast.error("Delete blocked by your role. Admins can delete products.");
+      return;
+    }
+    audit("product.delete", "products", p.id, { name: p.name });
+    toast.success("Product deleted.");
+    setDeleting(null);
+    await queryClient.invalidateQueries({ queryKey: ["admin-catalogue"] });
+  }
+
   if (isLoading) {
     return <div className="h-[60vh] animate-pulse rounded-3xl bg-secondary/40" />;
   }
@@ -133,6 +153,7 @@ function ProductsPage() {
               <th className="px-4 py-3">Stock</th>
               <th className="px-4 py-3">Try-on</th>
               <th className="px-4 py-3">Live</th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -216,6 +237,16 @@ function ProductsPage() {
                       onCheckedChange={(checked) => void toggleActive(p, checked)}
                     />
                   </td>
+                  <td className="px-4 py-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-destructive hover:text-destructive"
+                      onClick={() => setDeleting(p)}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </td>
                 </tr>
               );
             })}
@@ -229,6 +260,30 @@ function ProductsPage() {
           stores={data?.stores ?? []}
           brands={data?.brands ?? []}
         />
+      </Dialog>
+
+      <Dialog open={!!deleting} onOpenChange={() => setDeleting(null)}>
+        <DialogContent className="glass-strong max-w-md rounded-3xl border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl">Delete product</DialogTitle>
+            <DialogDescription>
+              This will permanently remove <strong>{deleting?.name}</strong> from the catalogue. This
+              action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleting(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={saving === deleting?.id}
+              onClick={() => deleting && void deleteProduct(deleting)}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );
@@ -247,13 +302,19 @@ function AddProductDialog({
   const [form, setForm] = useState({
     name: "",
     product_code: "",
+    description: "",
     category: "Men",
     gender: "Men",
     price: "",
     colour: "Black",
+    fit: "",
+    material: "",
+    style: "",
+    occasion: "",
     try_on_type: "upper_body" as (typeof TRY_ON_TYPES)[number],
+    sizes: "S, M, L",
   });
-  const [storeId, setStoreId] = useState(stores[0]?.id ?? "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   async function create() {
@@ -268,18 +329,29 @@ function AddProductDialog({
       toast.error("No demo brand configured.");
       return;
     }
+    const sizes = form.sizes
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (sizes.length === 0) sizes.push("S", "M", "L");
+
     const { data, error } = await supabase
       .from("products")
       .insert({
         brand_id: brandId,
         name: form.name.trim(),
         product_code: form.product_code.trim(),
+        description: form.description.trim() || null,
         category: form.category,
         gender: form.gender,
         price: Number(form.price),
         colour: form.colour,
+        fit: form.fit.trim() || null,
+        material: form.material.trim() || null,
+        style: form.style.trim() || null,
+        occasion: form.occasion.trim() || null,
         try_on_type: form.try_on_type,
-        sizes: ["S", "M", "L"],
+        sizes,
         is_demo: true,
       })
       .select("id")
@@ -289,23 +361,42 @@ function AddProductDialog({
       toast.error("Could not create product — this requires an admin role.");
       return;
     }
-    if (storeId) {
-      await supabase
-        .from("inventory")
-        .insert({ product_id: data.id, store_id: storeId, available_units: 10, sold_units: 0 });
+    if (imageFile) {
+      const { url, error: uploadErr } = await uploadProductImage(
+        imageFile,
+        form.product_code.trim(),
+      );
+      if (uploadErr) {
+        toast.error(`Image upload failed: ${uploadErr}`);
+      } else if (url) {
+        await supabase.from("products").update({ images: [url] }).eq("id", data.id);
+      }
+    }
+    const inventoryRows = stores.map((s) => ({
+      product_id: data.id,
+      store_id: s.id,
+      available_units: 10,
+      sold_units: 0,
+    }));
+    const { error: invErr } = await supabase.from("inventory").upsert(inventoryRows, {
+      onConflict: "product_id,store_id",
+      ignoreDuplicates: true,
+    });
+    if (invErr) {
+      toast.warning("Product created but some store inventory could not be seeded.");
     }
     setSaving(false);
     audit("product.create", "products", data.id, {
       name: form.name,
       product_code: form.product_code,
     });
-    toast.success("Product created.");
+    toast.success("Product created across all stores.");
     onClose();
     await queryClient.invalidateQueries({ queryKey: ["admin-catalogue"] });
   }
 
   return (
-    <DialogContent className="glass-strong max-w-lg rounded-3xl border-border">
+    <DialogContent className="glass-strong max-w-lg rounded-3xl border-border max-h-[85vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle className="font-display text-xl">Add product</DialogTitle>
         <DialogDescription>
@@ -349,6 +440,13 @@ function AddProductDialog({
             options={CATEGORIES}
           />
         </LabelField>
+        <LabelField label="Gender">
+          <NativeSelect
+            value={form.gender}
+            onChange={(e) => setForm({ ...form, gender: e.target.value })}
+            options={GENDERS}
+          />
+        </LabelField>
         <LabelField label="Try-on type">
           <NativeSelect
             value={form.try_on_type}
@@ -358,15 +456,54 @@ function AddProductDialog({
             options={TRY_ON_TYPES.map((t) => t)}
           />
         </LabelField>
-        <LabelField label="Initial store (10 units)">
-          <NativeSelect
-            value={storeId}
-            onChange={(e) => setStoreId(e.target.value)}
-            options={stores.map((s) => s.id)}
-            labels={stores.map((s) => s.name)}
+        <LabelField label="Sizes (comma-separated)">
+          <Input
+            value={form.sizes}
+            onChange={(e) => setForm({ ...form, sizes: e.target.value })}
+            placeholder="S, M, L, XL"
           />
         </LabelField>
       </div>
+      <LabelField label="Description">
+        <Input
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="Optional product description"
+        />
+      </LabelField>
+      <div className="grid grid-cols-2 gap-4">
+        <LabelField label="Fit">
+          <Input
+            value={form.fit}
+            onChange={(e) => setForm({ ...form, fit: e.target.value })}
+            placeholder="e.g. Slim, Oversized"
+          />
+        </LabelField>
+        <LabelField label="Material">
+          <Input
+            value={form.material}
+            onChange={(e) => setForm({ ...form, material: e.target.value })}
+            placeholder="e.g. Cotton, Denim"
+          />
+        </LabelField>
+        <LabelField label="Style">
+          <Input
+            value={form.style}
+            onChange={(e) => setForm({ ...form, style: e.target.value })}
+            placeholder="e.g. Casual, Formal"
+          />
+        </LabelField>
+        <LabelField label="Occasion">
+          <Input
+            value={form.occasion}
+            onChange={(e) => setForm({ ...form, occasion: e.target.value })}
+            placeholder="e.g. Wedding, College"
+          />
+        </LabelField>
+      </div>
+      <LabelField label="Product image">
+        <ImageUpload value={imageFile} onChange={setImageFile} disabled={saving} />
+      </LabelField>
       <DialogFooter>
         <Button variant="ghost" onClick={onClose}>
           Cancel

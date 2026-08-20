@@ -10,12 +10,23 @@ import {
   parseJsonBlock,
   type SearchIntent,
 } from "@/lib/ai.server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const searchSchema = z.object({ query: z.string().min(1).max(400) });
 
 export const aiSearch = createServerFn({ method: "POST" })
   .validator((input: unknown) => searchSchema.parse(input))
   .handler(async ({ data }) => {
+    if (!checkRateLimit("aiSearch", 30, 60_000)) {
+      return {
+        mode: "offline" as const,
+        intent: {} as SearchIntent,
+        message: "Too many requests. Please wait a moment before searching again.",
+        productIds: [] as string[],
+        degraded: true,
+      };
+    }
+
     const catalogue = await loadCatalogue();
     const result = await askGateway(
       `${SEARCH_SYSTEM}\n\nCATALOGUE (id | name | category | gender | price | colour | fit | style | occasion | stock):\n${catalogueForPrompt(catalogue)}`,
@@ -65,6 +76,14 @@ const assistantSchema = z.object({
 export const assistantReply = createServerFn({ method: "POST" })
   .validator((input: unknown) => assistantSchema.parse(input))
   .handler(async ({ data }) => {
+    if (!checkRateLimit("assistantReply", 15, 60_000)) {
+      return {
+        degraded: true,
+        message: "Too many requests. Please wait a moment before chatting again.",
+        productIds: [] as string[],
+      };
+    }
+
     const catalogue = await loadCatalogue();
     const result = await askGateway(
       `${ASSISTANT_SYSTEM}\n\nCATALOGUE (id | name | category | gender | price | colour | fit | style | occasion | stock):\n${catalogueForPrompt(catalogue)}`,

@@ -1,11 +1,18 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { Building2, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { GlassCard, SectionLabel } from "@/components/glass";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { audit } from "@/lib/audit";
 import { isDemoMode, disableDemoMode } from "@/lib/demo-mode";
+import { inr } from "@/lib/format";
+import { catalogueQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
@@ -21,8 +28,12 @@ export const Route = createFileRoute("/admin/settings")({
 
 function SettingsPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState<string | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
+  const { data: catalogue } = useQuery(catalogueQuery);
+  const [storeEdits, setStoreEdits] = useState<Record<string, string>>({});
+  const [savingStore, setSavingStore] = useState<string | null>(null);
 
   useEffect(() => {
     const userId = supabase.auth.getUser().then(({ data }) => {
@@ -44,6 +55,31 @@ function SettingsPage() {
     await supabase.auth.signOut();
     navigate({ to: "/auth" });
   }
+
+  async function saveStoreName(id: string) {
+    const value = storeEdits[id]?.trim();
+    if (!value) {
+      toast.error("Store name cannot be empty.");
+      return;
+    }
+    setSavingStore(id);
+    const { error } = await supabase.from("stores").update({ name: value }).eq("id", id);
+    setSavingStore(null);
+    if (error) {
+      toast.error("Update blocked by your role. Admins can edit store details.");
+      return;
+    }
+    audit("store.name_update", "stores", id, { name: value });
+    toast.success("Store name updated.");
+    setStoreEdits((e) => {
+      const next = { ...e };
+      delete next[id];
+      return next;
+    });
+    await queryClient.invalidateQueries({ queryKey: ["catalogue"] });
+  }
+
+  const stores = catalogue?.stores ?? [];
 
   return (
     <div className="space-y-6">
@@ -101,6 +137,46 @@ function SettingsPage() {
             </p>
           </div>
         </div>
+      </GlassCard>
+
+      <GlassCard className="p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Building2 className="size-5 text-primary" />
+          <h2 className="font-medium">Store locations</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Edit store names. Changes are reflected across all screens immediately.
+        </p>
+        {stores.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No stores configured.</p>
+        ) : (
+          <div className="space-y-3">
+            {stores.map((s) => {
+              const edited = storeEdits[s.id] !== undefined;
+              return (
+                <div key={s.id} className="flex items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    <Input
+                      value={edited ? storeEdits[s.id] : s.name}
+                      onChange={(e) => setStoreEdits((d) => ({ ...d, [s.id]: e.target.value }))}
+                      className="h-9"
+                    />
+                  </div>
+                  <span className="shrink-0 text-xs text-muted-foreground">{s.city}</span>
+                  {edited ? (
+                    <Button
+                      size="sm"
+                      disabled={savingStore === s.id}
+                      onClick={() => void saveStoreName(s.id)}
+                    >
+                      Save
+                    </Button>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </GlassCard>
 
       <Button variant="glass" onClick={() => void signOut()}>

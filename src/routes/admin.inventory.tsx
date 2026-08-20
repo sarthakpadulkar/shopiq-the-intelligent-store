@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { GlassCard, SectionLabel } from "@/components/glass";
@@ -17,7 +17,6 @@ export const Route = createFileRoute("/admin/inventory")({
       { title: "Inventory — ShopIQ Admin" },
       { name: "description", content: "Per-store stock, sections and rack locations." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: InventoryPage,
@@ -33,7 +32,35 @@ function InventoryPage() {
   const stores = new Map((data?.stores ?? []).map((s) => [s.id, s]));
   const rows = data?.inventory ?? [];
 
-  async function saveUnits(id: string) {
+  const soldByInventory = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const row of rows) {
+      map.set(`${row.product_id}:${row.store_id}`, 0);
+    }
+    return map;
+  }, [rows]);
+
+  const { data: salesData } = useQuery({
+    queryKey: ["inventory-sales"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("sales")
+        .select("product_id, store_id, units");
+      return data ?? [];
+    },
+    staleTime: 30_000,
+  });
+
+  const soldMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const sale of salesData ?? []) {
+      const key = `${sale.product_id}:${sale.store_id}`;
+      map.set(key, (map.get(key) ?? 0) + sale.units);
+    }
+    return map;
+  }, [salesData]);
+
+  async function saveUnits(id: string, productId: string, storeId: string) {
     const value = Number(edits[id]);
     if (!Number.isFinite(value) || value < 0) {
       toast.error("Enter a valid unit count.");
@@ -69,7 +96,7 @@ function InventoryPage() {
         <SectionLabel>Inventory</SectionLabel>
         <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">Stock by store</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Click a unit count to adjust it. Row-level security decides who may write.
+          Click a unit count to adjust it. Sold units are computed from actual sales records.
         </p>
       </div>
 
@@ -91,6 +118,7 @@ function InventoryPage() {
               const store = stores.get(row.store_id);
               const value = edits[row.id] ?? String(row.available_units);
               const status = stockStatus(row.available_units);
+              const sold = soldMap.get(`${row.product_id}:${row.store_id}`) ?? 0;
               return (
                 <tr key={row.id} className="border-t border-border/50">
                   <td className="px-4 py-3">
@@ -118,14 +146,14 @@ function InventoryPage() {
                         <Button
                           size="sm"
                           disabled={saving === row.id}
-                          onClick={() => void saveUnits(row.id)}
+                          onClick={() => void saveUnits(row.id, row.product_id, row.store_id)}
                         >
                           Save
                         </Button>
                       ) : null}
                     </div>
                   </td>
-                  <td className="px-4 py-3">{row.sold_units}</td>
+                  <td className="px-4 py-3">{sold}</td>
                   <td className="px-4 py-3">
                     <span
                       className={

@@ -17,6 +17,7 @@ import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as RequestDemoRouteImport } from './routes/request-demo'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAiInsightsRouteImport } from './routes/admin.ai-insights'
 import { Route as AdminDemandIntelligenceRouteImport } from './routes/admin.demand-intelligence'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
@@ -75,6 +76,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminAiInsightsRoute = AdminAiInsightsRouteImport.update({
   id: '/ai-insights',
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
   '/shop/try-on': typeof ShopTryOnRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
   '/shop/qr/$id': typeof ShopQrIdRoute
@@ -202,7 +209,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/features': typeof FeaturesRoute
   '/request-demo': typeof RequestDemoRoute
@@ -222,6 +228,7 @@ export interface FileRoutesByTo {
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
   '/shop/try-on': typeof ShopTryOnRouteWithChildren
+  '/admin': typeof AdminIndexRoute
   '/shop': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
   '/shop/qr/$id': typeof ShopQrIdRoute
@@ -252,6 +259,7 @@ export interface FileRoutesById {
   '/shop/find-store': typeof ShopFindStoreRoute
   '/shop/search': typeof ShopSearchRoute
   '/shop/try-on': typeof ShopTryOnRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/shop/product/$id': typeof ShopProductIdRoute
   '/shop/qr/$id': typeof ShopQrIdRoute
@@ -282,6 +290,7 @@ export interface FileRouteTypes {
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
+    | '/admin/'
     | '/shop/'
     | '/shop/product/$id'
     | '/shop/qr/$id'
@@ -289,7 +298,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
     | '/features'
     | '/request-demo'
@@ -309,6 +317,7 @@ export interface FileRouteTypes {
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
+    | '/admin'
     | '/shop'
     | '/shop/product/$id'
     | '/shop/qr/$id'
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/shop/find-store'
     | '/shop/search'
     | '/shop/try-on'
+    | '/admin/'
     | '/shop/'
     | '/shop/product/$id'
     | '/shop/qr/$id'
@@ -411,6 +421,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/ai-insights': {
       id: '/admin/ai-insights'
@@ -571,6 +588,7 @@ interface AdminRouteChildren {
   AdminSearchAnalyticsRoute: typeof AdminSearchAnalyticsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStoresRoute: typeof AdminStoresRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -585,6 +603,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSearchAnalyticsRoute: AdminSearchAnalyticsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStoresRoute: AdminStoresRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
